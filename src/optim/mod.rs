@@ -1,1 +1,2 @@
-﻿pub mod sgd;
+﻿pub mod momentum_sgd;
+pub mod sgd;
