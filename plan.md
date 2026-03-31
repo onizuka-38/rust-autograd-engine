@@ -246,3 +246,10 @@ fn feature_regression_case() {
 - 검증 기준: 선형 회귀 케이스에서 SGD 대비 수렴 스텝 수 개선
 - 확인 명령: `cargo test optim`
 - 검증 상태: 구현 완료, `cargo` 미설치로 실행 검증 대기
+## 10. 추가 개발 로그 (진행)
+- [x] `autograd` 역전파 규칙 분리: `src/autograd/backward_rules.rs` 신설
+- [x] `autograd/mod.rs`는 순회/스케줄링 책임만 유지하도록 단순화
+- [x] `nn::Sequential` 신규 모듈 추가: `src/nn/sequential.rs`
+- [x] `nn` 모듈 공개 경로에 `sequential` 추가
+- [x] `Sequential` 전용 테스트 추가: `tests/nn_sequential.rs`
+- [ ] 실행 검증(`cargo check`, `cargo test`)은 toolchain 부재로 보류
