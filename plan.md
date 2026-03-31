@@ -187,3 +187,57 @@ fn feature_regression_case() {
 - 작업: 구현 시작 전 통과해야 할 체크 항목을 명시
 - 검증 기준: "모든 테스트 통과", "API 호환성 유지", "요청 범위 외 변경 없음" 3개 항목 포함
 - 확인 명령: `rg "모든 테스트 통과|API 호환성 유지|요청 범위 외 변경 없음" plan.md`
+
+---
+
+## 8. 원래 기능 점검 결과 (현재 상태)
+### 8.1 정적 점검(완료)
+- [x] 모듈 구조 존재 확인: `src/tensor`, `src/autograd`, `src/nn`, `src/optim`
+- [x] 핵심 API 존재 확인: `Tensor::{add, sub, mul, matmul, mean, backward}`, `mse_loss`, `Sgd`
+- [x] 테스트 파일 존재 확인: `tests/tensor_ops.rs`, `tests/autograd.rs`
+- [x] 예제 파일 존재 확인: `examples/xor_training.rs`
+
+### 8.2 실행 점검(환경 의존)
+- [ ] `cargo check` 실행
+- [ ] `cargo test` 실행
+- [ ] `cargo run --example xor_training` 실행
+- 상태: 현재 개발 환경에 `cargo`가 없어 실행 검증은 보류
+- 확인 명령: `cargo --version`
+
+### 8.3 현재 리스크(원래 기능 기준)
+- 브로드캐스팅 경계 케이스(고차원/스칼라 조합) 테스트가 부족함
+- 수치 안정성(`sigmoid` 포화구간, 학습률 민감도) 검증 시나리오가 부족함
+- 옵티마이저가 SGD 단일 구현이라 실험 유연성이 낮음
+
+---
+
+## 9. 추가 기능 반영 계획 (신규)
+1. [ ] TODO: 브로드캐스팅 경계 테스트 확장
+- 작업: 스칼라-텐서, 1D-2D, 2D-3D 조합 케이스 테스트 추가
+- 대상 파일: `tests/tensor_ops.rs`
+- 검증 기준: 신규 케이스 5개 이상 통과
+- 확인 명령: `cargo test tensor_ops`
+
+2. [ ] TODO: `sum` 연산 및 역전파 추가
+- 작업: `Tensor::sum()`과 `Op::Sum`의 backward 경로 구현
+- 대상 파일: `src/tensor/mod.rs`, `src/autograd/mod.rs`, `tests/autograd.rs`
+- 검증 기준: 수동 미분값과 오차 `1e-6` 이내 일치
+- 확인 명령: `cargo test autograd`
+
+3. [ ] TODO: `zero_like`/`ones_like` 유틸 추가
+- 작업: 초기화 편의 API 추가 및 shape 일관성 테스트 추가
+- 대상 파일: `src/tensor/mod.rs`, `tests/tensor_ops.rs`
+- 검증 기준: shape/data 길이 불일치 없음
+- 확인 명령: `cargo test tensor_ops`
+
+4. [ ] TODO: XOR 학습 회귀 기준 고정
+- 작업: 예제 출력 기준(loss 감소/예측 범위)을 테스트로 승격
+- 대상 파일: `tests/autograd.rs` 또는 신규 `tests/xor_regression.rs`
+- 검증 기준: 초기 loss 대비 최종 loss 감소
+- 확인 명령: `cargo test xor_regression`
+
+5. [ ] TODO: 옵티마이저 확장 준비(모멘텀 SGD)
+- 작업: 기존 `Sgd` API를 유지하면서 `MomentumSgd` 추가
+- 대상 파일: `src/optim/mod.rs`, `src/optim/sgd.rs`, 신규 `src/optim/momentum_sgd.rs`, 테스트 파일
+- 검증 기준: 선형 회귀 케이스에서 SGD 대비 수렴 스텝 수 개선
+- 확인 명령: `cargo test optim`
