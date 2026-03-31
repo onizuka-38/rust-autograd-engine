@@ -1,5 +1,6 @@
 ﻿pub mod activations;
 pub mod linear;
+pub mod sequential;
 
 use crate::Tensor;
 
