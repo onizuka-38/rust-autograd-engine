@@ -138,6 +138,12 @@ pub fn backward(loss: &Tensor) {
                     parents[0].add_grad(&grad);
                 }
             }
+            Op::Sum { input_shape } => {
+                if parents.len() == 1 {
+                    let grad = vec![grad_out[0]; input_shape.iter().product::<usize>()];
+                    parents[0].add_grad(&grad);
+                }
+            }
         }
     }
 }
