@@ -2,7 +2,7 @@
 
 `rust-autograd-engine`는 Rust로 구현한 경량 텐서/자동미분 학습 엔진(CoreGrad)입니다.
 
-## 프로젝트 소개
+## 프로젝트 구조
 - `Tensor` 기반 다차원 데이터 연산 (`add/sub/mul/matmul`, 브로드캐스팅)
 - 동적 연산 그래프 + 역전파(`backward`)를 통한 기울기 계산
 - `nn.Linear`, `ReLU`, `Sigmoid`, `MSELoss`, `SGD`로 구성한 최소 신경망 API
