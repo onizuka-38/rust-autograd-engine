@@ -40,6 +40,9 @@ pub enum Op {
     Mean {
         input_shape: Vec<usize>,
     },
+    Sum {
+        input_shape: Vec<usize>,
+    },
 }
 
 pub(crate) struct Node {
@@ -123,6 +126,17 @@ impl Tensor {
         Self::new(vec![v], vec![1], requires_grad)
     }
 
+    pub fn zero_like(&self) -> Self {
+        let shape = self.shape();
+        Self::zeros(shape, false)
+    }
+
+    pub fn ones_like(&self) -> Self {
+        let shape = self.shape();
+        let len = ops::numel(&shape);
+        Self::new(vec![1.0; len], shape, false)
+    }
+
     pub fn shape(&self) -> Vec<usize> {
         self.inner.borrow().shape.clone()
     }
@@ -151,18 +165,16 @@ impl Tensor {
     }
 
     pub fn mean(&self) -> Tensor {
-        let (sum, len, requires_grad, shape, data) = {
+        let (sum, len, requires_grad, shape) = {
             let n = self.inner.borrow();
             (
                 n.data.iter().copied().sum::<f32>(),
                 n.data.len(),
                 n.requires_grad,
                 n.shape.clone(),
-                n.data.clone(),
             )
         };
         let value = sum / len as f32;
-        let _ = data;
 
         Tensor::from_op(
             vec![value],
@@ -170,6 +182,25 @@ impl Tensor {
             requires_grad,
             vec![self.clone()],
             Op::Mean { input_shape: shape },
+        )
+    }
+
+    pub fn sum(&self) -> Tensor {
+        let (sum, requires_grad, shape) = {
+            let n = self.inner.borrow();
+            (
+                n.data.iter().copied().sum::<f32>(),
+                n.requires_grad,
+                n.shape.clone(),
+            )
+        };
+
+        Tensor::from_op(
+            vec![sum],
+            vec![1],
+            requires_grad,
+            vec![self.clone()],
+            Op::Sum { input_shape: shape },
         )
     }
 
